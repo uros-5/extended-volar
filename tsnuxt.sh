@@ -1,6 +1,7 @@
 #!/bin/bash
 
-tsdir="/home/uros/Documents/programiranje/vue/ui-lishuuro/node_modules/typescript/lib"
+# this can be absolute path
+tsdir="./node_modules/typescript/lib"
 
 oldstart="var ts ="
 newstart='const tempp = require("../lib/temp");'
@@ -16,9 +17,9 @@ oldTextSpan="(textSpan = createTextSpanFromNode\(name, sourceFile\);)"
 
 tsfile="$tsdir/typescript.js"
 
-echo $1
+[ "1" -eq "$1" ]  && cp -r "$tsdir/original-typescript.js" "$tsdir/typescript.js" && exit 1
 
-[ "1" -eq "$1" ] && cp -r "$tsdir/original-typescript.js" "$tsdir/typescript.js" && exit 1
+echo "sd task started"
 
 test ! -f "$tsdir/original-typescript.js" && cp -r "$tsfile" "$tsdir/original-typescript.js"
 cp -r temp.js "$tsdir"
@@ -27,7 +28,7 @@ sd "$oldexpands" "$oldexpands\n  $newexpands\n" "$tsfile"
 sd "$oldcreatedef" '$1
     let tfn = sourceFile.tempFileName;
     let fileName = tfn ? tfn : sourceFile.fileName;
-    tempp.log2(`tfn: ${fileName}`);' "$tsfile"
+    ' "$tsfile"
 
 sd -f ms "(function createDefinitionInfoFromName\(.*?fileName:).*?,(.*?;.*?\})" '$1 fileName, $2' "$tsfile"
 sd -f ms "$oldTextSpan" '
@@ -40,4 +41,4 @@ sd -f ms "$oldTextSpan" '
 sd "$olddefssymbol" '$1
     if(defs.length > 0) { return defs }' "$tsfile"
 
-echo "done"
+echo "sd task done"
