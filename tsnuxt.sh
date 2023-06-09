@@ -8,12 +8,14 @@ fromNameFn="(function createDefinitionInfoFromName\(.*\).*\n.*getSourceFile.*;)"
 fromNameFn2="(function createDefinitionInfoFromName\(.*\).*\n.*return\{fileName:);"
 changedFile="sourceFile tfn = sourceFile.tempFileName;sourceFile fileName = tfn ? tfn : sourceFile.fileName; "
 
-cp -r "$tsdir/typescript.js" "$tsdir/original-typescript.js"
-cp -r temp.js "$tsdir"
-sd "$startjs" "$temppImport\n$startjs" "$tsdir/typescript.js"
-sd "$resultsStart" "$resultsStart\n  $nuxtComp\n" "$tsdir/typescript.js"
-sd "$fromNameFn" '$1
-  let tfn = sourceFile.tempFileName;
-  let fileName = tfn ? tfn : sourceFile.fileName;' "$tsdir/typescript.js"
+tsfile="$tsdir/typescript.js"
 
-sd -f ms "(function createDefinitionInfoFromName\(.*?fileName:).*?,(.*?;.*?\})" '$1 fileName, $2' "$tsdir/typescript.js"
+cp -r "$tsfile" "$tsdir/original-typescript.js"
+cp -r temp.js "$tsdir"
+sd "$startjs" "$temppImport\n$startjs" "$tsfile"
+sd "$resultsStart" "$resultsStart\n  $nuxtComp\n" "$tsfile"
+sd "$fromNameFn" '$1
+    let tfn = sourceFile.tempFileName;
+    let fileName = tfn ? tfn : sourceFile.fileName;' "$tsfile"
+
+sd -f ms "(function createDefinitionInfoFromName\(.*?fileName:).*?,(.*?;.*?\})" '$1 fileName, $2' "$tsfile"
