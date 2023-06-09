@@ -92,18 +92,30 @@ module.exports.showError = (plugin, doc, token) => {
 
 module.exports.nuxtComp = (results, node) => {
   if (results && node.getSourceFile().fileName.includes(".vue")) {
-    results.find(item => {
+    module.exports.log2('somethingg is happening')
+    let canPush = false;
+    let res = results.find(item => {
       let comp = module.exports.re.exec(item.getFullText());
       if (comp) {
+        module.exports.log2(`comp found: ${comp.at(1)}`)
         let fileName = item.getSourceFile().fileName;
+        module.exports.log2(fileName)
         if (fileName.endsWith(".nuxt/components.d.ts")) {
           fileName = fileName.replace(".nuxt/components.d.ts", `components/${comp.at(1)}`)
-          item.getSourceFile().fileName = fileName;
-          item.getStart = () => 0;
-          item.getEnd = () => 0;
+          item.getSourceFile().tempFileName = fileName;
+          item.getSourceFile().tempStart = 0;
+          item.getSourceFile().tempend = 0;
+          item.getStart = (sf, i) => 0;
+          item.getEnd = (sf, i) => 0;
+          canPush = true;
+          return item;
         }
       }
-    })
+    });
+    if (canPush) {
+      results.length = 0;
+      results.push(res);
+    }
   }
 
 }
