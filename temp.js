@@ -92,12 +92,10 @@ module.exports.showError = (plugin, doc, token) => {
 
 module.exports.nuxtComp = (results, node) => {
   if (results && node.getSourceFile().fileName.includes(".vue")) {
-    module.exports.log2('somethingg is happening')
     let canPush = false;
     let res = results.find(item => {
       let comp = module.exports.re.exec(item.getFullText());
       if (comp) {
-        module.exports.log2(`comp found: ${comp.at(1)}`)
         let fileName = item.getSourceFile().fileName;
         module.exports.log2(fileName)
         if (fileName.endsWith(".nuxt/components.d.ts")) {
