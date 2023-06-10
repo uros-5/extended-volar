@@ -1,4 +1,5 @@
 const fs = require("fs");
+const nuxtFolder = ".nuxt/components.d.ts";
 let re = new RegExp("'(.*)' has no exported member .* '(.*)'.")
 module.exports.re = new RegExp("typeof import.*\.\.\/components\/(.*\.vue)\"");
 let logCounter = 0;
@@ -97,12 +98,9 @@ module.exports.nuxtComp = (results, node) => {
       let comp = module.exports.re.exec(item.getFullText());
       if (comp) {
         let fileName = item.getSourceFile().fileName;
-        module.exports.log2(fileName)
-        if (fileName.endsWith(".nuxt/components.d.ts")) {
-          fileName = fileName.replace(".nuxt/components.d.ts", `components/${comp.at(1)}`)
+        if (fileName.endsWith(nuxtFolder)) {
+          fileName = fileName.replace(nuxtFolder, `components/${comp.at(1)}`)
           item.getSourceFile().tempFileName = fileName;
-          item.getSourceFile().tempStart = 0;
-          item.getSourceFile().tempend = 0;
           item.getStart = (sf, i) => 0;
           item.getEnd = (sf, i) => 0;
           canPush = true;
