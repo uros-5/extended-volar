@@ -1,7 +1,9 @@
 const fs = require("fs");
 const nuxtFolder = ".nuxt/components.d.ts";
+const autoImport = ".nuxt/types/imports.d.ts"
 let re = new RegExp("'(.*)' has no exported member .* '(.*)'.")
 module.exports.re = new RegExp("typeof import.*\.\.\/components\/(.*\.vue)\"");
+module.exports.re2 = new RegExp("typeof import.*\.\.\/\.\.\/(.*)'\\\)");
 let logCounter = 0;
 /**
   @param msg {string}
@@ -113,5 +115,28 @@ module.exports.nuxtComp = (results, node) => {
       results.push(res);
     }
   }
+}
 
+module.exports.autoImport = (results, node) => {
+  if (results && node.getSourceFile().fileName.includes(".vue")) {
+    let canPush = false;
+    let res = results.find(item => {
+      let auto = module.exports.re2.exec(item.getFullText());
+      if (auto) {
+        let fileName = item.getSourceFile().fileName;
+        if (fileName.endsWith(autoImport)) {
+          fileName = fileName.replace(autoImport, `${auto.at(1)}.ts`)
+          if (!fileName.startsWith("node_modules")) {
+            item.getSourceFile().tempFileName = fileName;
+            canPush = true;
+            return item;
+          }
+        }
+      }
+    });
+    if (canPush) {
+      results.length = 0;
+      results.push(res);
+    }
+  }
 }
